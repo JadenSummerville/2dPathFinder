@@ -67,13 +67,28 @@ public class Agent {
         }
     }
     public static void main(String[] args)throws  ExecutionException, IllegalArgumentException{
+        Agent n = new Agent(1, 1, 100, 0, 100, 0, .5, 1);
+        Double[] A = new Double[2];
+        A[0]=0.;
+        A[1]=1.;
+        Double[] B = new Double[2];
+        B[0]=1.;
+        B[1]=0.;
+        LineSegment b = new LineSegment(A, B);
+        n.aimAt(0, 0);
+        n.bounce(b);
+        n.move();
+        System.out.println(n.position_x+" "+n.position_y);
+        n.move();
+        System.out.println(n.position_x+" "+n.position_y);
+        /*
         Agent a = new Agent(50,50,100,0,100,0,.5,2);
         for(int i = 0; i < 100; i++){
             a.aimAt(0,3);
             a.move();
             System.out.println("X:"+a.x()+" Y:"+a.y());
         }
-        
+        */
     }
     /**
      * Increment position by velocity and
@@ -88,6 +103,20 @@ public class Agent {
         velocity_x = velocity_x*friction;
         velocity_y = velocity_y*friction;
         checkRep();
+    }
+    public LineSegment projectedMovement(){
+        Double[] A = new Double[2];
+        A[0]=position_x;
+        A[1]=position_y;
+        Double[] B = new Double[2];
+        B[0]=position_x + frictionMove(velocity_x);
+        B[1]=position_y + frictionMove(velocity_y);
+        LineSegment goal = new LineSegment(A, B);
+        return goal;
+    }
+    public void halt(){
+        velocity_x = 0;
+        velocity_y = 0;
     }
     /**
      * Normalizes speed according to friction and requested speed.
@@ -136,7 +165,7 @@ public class Agent {
 
         double hypotenus = Math.pow(x_V*x_V+y_V*y_V,.5);
         //If we are close enough or there then stop
-        if(hypotenus < 5){
+        if(hypotenus == 0){
             return;
         }
         // Increment and normalize velocities
@@ -149,5 +178,41 @@ public class Agent {
     }
     public double y(){
         return position_y;
+    }
+    /**
+     * Bounce off input line.
+     * 
+     * @param input line to bounce with
+     * @spec.modifies this
+     * @spec.requires input != null
+    */
+    public void bounce(LineSegment input)throws IllegalArgumentException, ExecutionException{
+        checkRep();
+        double magnitude = Math.pow(velocity_x*velocity_x+velocity_y*velocity_y, 0.5);
+        double angle1;
+        double angle2;
+        angle1 = slopeToAngle(input.findSlope());
+        if(velocity_x == 0){
+            angle2 = Math.PI/2;
+        }else{
+            angle2 = slopeToAngle(velocity_y/velocity_x);
+            if(velocity_x<0){
+                angle2 += Math.PI;
+            }
+        }
+        double angle_new = -angle2+2*angle1;
+        velocity_x=magnitude*Math.cos(angle_new);
+        velocity_y=magnitude*Math.sin(angle_new);
+        //System.out.println(angle2+" "+angle1+" "+angle_new);
+        checkRep();
+    }
+    private static double[] polarToCart(double angle, double magnitude){
+        double[] goal = new double[2];
+        goal[0] = magnitude*Math.cos(angle);
+        goal[1] = magnitude*Math.sin(angle);
+        return goal;
+    }
+    private static double slopeToAngle(double slope){
+        return Math.atan(slope);
     }
 }
