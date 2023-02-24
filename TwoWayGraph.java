@@ -82,8 +82,7 @@ public class TwoWayGraph {
         nodes.add(point2);
         nodes.add(point5);
         nodes.add(point4);
-
-        sort(point3,nodes);
+        
         TwoWayGraph a = new TwoWayGraph(lines, nodes);
         System.out.println(a.children(point1));
         System.out.println(a.PathFind(startPoint, endPoint));
@@ -266,7 +265,7 @@ private double getDistance(ArrayList<Double> p1, ArrayList<Double> p2){
     * @spec.requires original is not null and has length 2
     * @return a Double[] of length 2 containing the coordinates
     */
-    private static Double[] convertArrayListToDoubleArray(ArrayList<Double> original) {
+    public static Double[] convertArrayListToDoubleArray(ArrayList<Double> original) {
         Double[] coordinates = new Double[2];
         coordinates[0] = original.get(0);
         coordinates[1] = original.get(1);
